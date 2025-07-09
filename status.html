@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Status Monitor</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="main-screen">
+    <h1>Her Status:</h1>
+    <h2 id="statusDisplay">⏳ Loading...</h2>
+  </div>
+
+  <script type="module">
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+    import { database } from './firebase-config.js';
+
+    const statusRef = ref(database, "status");
+
+    onValue(statusRef, (snapshot) => {
+      const data = snapshot.val();
+      const display = document.getElementById("statusDisplay");
+      if (data && data.safe === true) {
+        display.textContent = "🟢 Safe";
+      } else {
+        display.textContent = "🔴 Not Safe";
+      }
+    });
+  </script>
+</body>
+</html>

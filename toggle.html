@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Are We Safe?</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- PASSWORD SCREEN -->
+  <div id="auth" class="auth-screen">
+    <div class="auth-box">
+      <h2>Enter Password</h2>
+      <input type="password" id="passwordInput" placeholder="Enter your password" />
+      <button onclick="checkPassword()">Unlock</button>
+      <p id="error" class="error-text"></p>
+    </div>
+  </div>
+
+  <!-- MAIN TOGGLE SCREEN -->
+  <div id="main" class="main-screen hidden">
+    <div class="toggle-box">
+      <h1 id="statusText">🔴 Not Safe</h1>
+      <label class="cute-toggle">
+        <input type="checkbox" id="toggleSwitch">
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <script type="module">
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+    import { database } from './firebase-config.js';
+
+    const PASS = "25012009";
+    const authDiv = document.getElementById("auth");
+    const mainDiv = document.getElementById("main");
+    const toggle = document.getElementById("toggleSwitch");
+    const statusText = document.getElementById("statusText");
+
+    if (localStorage.getItem("auth") === PASS) {
+      authDiv.classList.add("hidden");
+      mainDiv.classList.remove("hidden");
+    }
+
+    toggle.addEventListener("change", () => {
+  const isSafe = toggle.checked;
+  console.log("Toggled:", isSafe); // ✅ Add this line to confirm
+  statusText.textContent = isSafe ? "🟢 Safe" : "🔴 Not Safe";
+  set(ref(database, "status"), { safe: isSafe });
+});
+
+    window.checkPassword = function () {
+      const input = document.getElementById("passwordInput").value;
+      if (input === PASS) {
+        localStorage.setItem("auth", PASS);
+        authDiv.classList.add("hidden");
+        mainDiv.classList.remove("hidden");
+      } else {
+        document.getElementById("error").textContent = "Incorrect password!";
+      }
+    };
+  </script>
+</body>
+</html>
